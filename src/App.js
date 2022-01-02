@@ -7,27 +7,24 @@ import loginSevice from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState(null)
-  const [password, setPassword] = useState(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState({ errorMessage: null, succuses: null })
-  const [title, setTitle] = useState(null)
-  const [url, setUrl] = useState(null)
-  const [author, setAuthor] = useState(null)
+  
+  const [visible, setVisible] = useState(false)
 
   const resetInputSet = () => {
-    setUsername(null)
-    setPassword(null)
-    setTitle(null)
-    setUrl(null)
-    setAuthor(null)
+    setUsername('')
+    setPassword('')
+
   }
   const handleLogin = async (event) => {
     event.preventDefault()
-    if (username === null || password === null) {
+    if (username === '' || password === '') {
       setNotification({ ...notification, errorMessage: 'Give both username and password' })
       setTimeout(() => {
-        setNotification({ ...notification, errorMessage: null })
+        setNotification({ ...notification, errorMessage: '' })
       }, 3000)
       return
     }
@@ -42,7 +39,7 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
-      resetInputSet()  
+      resetInputSet()
     }
     catch (exception) {
       setNotification({ ...notification, errorMessage: "wrong username or password" })
@@ -51,24 +48,12 @@ const App = () => {
       }, 3000)
     }
   }
-  const handleAdding = async (event) => {
-    event.preventDefault()
-    if (author === null || url === null || title === null) {
-      setNotification({ ...notification, errorMessage: "you must fill all blanks" })
-      setTimeout(() => {
-        setNotification({ ...notification, errorMessage: null })
-      },3000)
-      return
-    }
-    const blog = {
-      author: author,
-      title: title,
-      url: url,
-      userId: user._id,
-    }
+  const handleAdding = async (blog) => {
+    blog = {...blog, userId : user._id}
     try {
-      blogService.addBlog(blog)
-      setNotification({ ...notification, succuses: `${title} was added` })
+      const recievedBlog = await blogService.addBlog(blog)
+      setBlogs(blogs.concat(recievedBlog))
+      setNotification({ ...notification, succuses: `${recievedBlog.title} was added` })
       setTimeout(() => {
         setNotification({ ...notification, succuses: null })
       }, 3000)
@@ -76,27 +61,21 @@ const App = () => {
     catch (exception) {
       setNotification({ ...notification, errorMessage: `couldnt add blog because ${exception}` })
       setTimeout(() => {
-        setNotification({ ...notification, errorMessage: null })
-      },3000)
+        setNotification({ ...notification, errorMessage: '' })
+      }, 3000)
     }
-    resetInputSet()
   }
   const logOut = () => {
     window.localStorage.removeItem('loggedBloglistAppUser')
     setUser(null)
   }
+
   const loginInfo = {
     username: username,
     password: password,
     handleLogin: handleLogin,
   }
-  const bloginfo = {
-    title: title,
-    url: url,
-    author: author,
-    handleAdding: handleAdding
-  }
-  
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
@@ -111,6 +90,22 @@ const App = () => {
       setUser(user)
     }
   }, [])
+  const Togglable = (props) => {
+    const showWhenVisible = { display: visible ? '' : 'none' }
+    const hiddenWHenVisible = { display: visible ? 'none' : '' }
+
+    return (
+      <>
+        <div style={hiddenWHenVisible}>
+          <button onClick={() => setVisible(!visible)}>{props.buttonLabel}</button>
+        </div>
+        <div style={showWhenVisible}>
+          {props.children}
+          <button onClick={() => setVisible(!visible)}>cancel</button>
+        </div>
+      </>
+    )
+  }
   if (user === null)
     return (
       <>
@@ -127,9 +122,10 @@ const App = () => {
       )}
       <br />
       {user.username} Logged in <button onClick={logOut}>Log Out</button>
-      <h2>Add New blog</h2>
-      <Blog.BlogForm bloginfo={bloginfo} setUrl={setUrl} setTitle={setTitle} setAuthor={setAuthor} />
-      <Notification notification={notification} />
+      <Togglable buttonLabel = "add blog">
+        <Blog.BlogForm handleAdding={handleAdding} />
+        <Notification notification={notification} />
+      </Togglable>
     </div>
   )
 }
