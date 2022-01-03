@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/Login'
 import Notification from './components/Notification'
+import Togglable from './components/Toggleable'
 import blogService from './services/blogs'
 import loginSevice from './services/login'
 
@@ -11,8 +12,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState({ errorMessage: null, succuses: null })
-  
-  const [visible, setVisible] = useState(false)
+
+
 
   const resetInputSet = () => {
     setUsername('')
@@ -24,7 +25,7 @@ const App = () => {
     if (username === '' || password === '') {
       setNotification({ ...notification, errorMessage: 'Give both username and password' })
       setTimeout(() => {
-        setNotification({ ...notification, errorMessage: '' })
+        setNotification({ ...notification, errorMessage: null })
       }, 3000)
       return
     }
@@ -49,10 +50,11 @@ const App = () => {
     }
   }
   const handleAdding = async (blog) => {
-    blog = {...blog, userId : user._id}
+    blog = { ...blog, userId: user._id }
     try {
       const recievedBlog = await blogService.addBlog(blog)
       setBlogs(blogs.concat(recievedBlog))
+      blogFormref.current.toggleVisibility()
       setNotification({ ...notification, succuses: `${recievedBlog.title} was added` })
       setTimeout(() => {
         setNotification({ ...notification, succuses: null })
@@ -61,7 +63,7 @@ const App = () => {
     catch (exception) {
       setNotification({ ...notification, errorMessage: `couldnt add blog because ${exception}` })
       setTimeout(() => {
-        setNotification({ ...notification, errorMessage: '' })
+        setNotification({ ...notification, errorMessage: null })
       }, 3000)
     }
   }
@@ -90,22 +92,12 @@ const App = () => {
       setUser(user)
     }
   }, [])
-  const Togglable = (props) => {
-    const showWhenVisible = { display: visible ? '' : 'none' }
-    const hiddenWHenVisible = { display: visible ? 'none' : '' }
-
-    return (
-      <>
-        <div style={hiddenWHenVisible}>
-          <button onClick={() => setVisible(!visible)}>{props.buttonLabel}</button>
-        </div>
-        <div style={showWhenVisible}>
-          {props.children}
-          <button onClick={() => setVisible(!visible)}>cancel</button>
-        </div>
-      </>
-    )
-  }
+  const blogFormref = useRef()
+  const blogForm = () => (
+    <Togglable buttonLabel="add blog" ref={blogFormref}>
+      <Blog.BlogForm handleAdding={handleAdding} />
+    </Togglable>
+  )
   if (user === null)
     return (
       <>
@@ -122,10 +114,8 @@ const App = () => {
       )}
       <br />
       {user.username} Logged in <button onClick={logOut}>Log Out</button>
-      <Togglable buttonLabel = "add blog">
-        <Blog.BlogForm handleAdding={handleAdding} />
-        <Notification notification={notification} />
-      </Togglable>
+      {blogForm()}
+      <Notification notification={notification} />
     </div>
   )
 }
