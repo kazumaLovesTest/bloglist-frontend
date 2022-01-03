@@ -1,15 +1,36 @@
-import React,{useState} from 'react'
-const Blog = ({ blog }) => (
-  <div>
-    {blog.title} {blog.author}
-  </div>
-)
+import React, { useState } from 'react'
+const Blog = ({ blog }) => {
+  const [view, setView] = useState(false)
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5,
+    listStyle: 'none'
+  }
+  if (view === false)
+    return (
+      <ul style={blogStyle}>
+        <li>Title:{blog.title}<button onClick={() => setView(!view)}>view</button></li>.
+      </ul>
+    )
+  if (view === true)
+    return (
+      <ul style={blogStyle}>
+        <li>Title:{blog.title} <button onClick={() => setView(!view)}>view</button></li>
+        <li>Link:{blog.url}</li>
+        <li>Likes:{blog.likes}</li>
+        <li>Author:{blog.author}</li>
+      </ul>
+    )
+}
 
-const BlogForm = ({handleAdding}) => {
+const BlogForm = ({ handleAdding }) => {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [author, setAuthor] = useState('')
-  
+
   const resetInputSet = () => {
     setTitle('')
     setUrl('')
@@ -43,4 +64,4 @@ const BlogForm = ({handleAdding}) => {
     </>
   )
 }
-export default {Blog,BlogForm}
+export default { Blog, BlogForm }
