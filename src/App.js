@@ -74,7 +74,7 @@ const App = () => {
       const sortedBlogs = updatedBlogs.sort((a, b) => {
         if (a.likes < b.likes)
           return 1
-        else if(a.likes > b.likes)
+        else if (a.likes > b.likes)
           return -1
         return 0
       })
@@ -87,17 +87,19 @@ const App = () => {
       }, 3000)
     }
   }
-  const deleteBlog = async(toBeDeleted) => {
+  const deleteBlog = async (toBeDeleted) => {
+    if (window.confirm("Are you sure you want to delete this blog?") === false)
+      return
     try {
       await blogService.deleteBlog(toBeDeleted)
-      const filteredBlogs = blogs.filter(blog => blog.id === toBeDeleted.id ? false:true)
+      const filteredBlogs = blogs.filter(blog => blog.id === toBeDeleted.id ? false : true)
       setBlogs(filteredBlogs)
       setNotification({ ...notification, succuses: `${toBeDeleted.title} was deleted` })
       setTimeout(() => {
         setNotification({ ...notification, succuses: null })
       }, 3000)
     }
-    catch(exception){
+    catch (exception) {
       setNotification({ ...notification, errorMessage: `couldnt delete blog because ${exception}` })
       setTimeout(() => {
         setNotification({ ...notification, errorMessage: null })
@@ -143,8 +145,8 @@ const App = () => {
     </Togglable>
   )
   const blogActions = {
-    addLike:addLike,
-    deleteBlog:deleteBlog
+    addLike: addLike,
+    deleteBlog: deleteBlog
   }
   if (user === null)
     return (
@@ -157,7 +159,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog.Blog key={blog.id} blog={blog} blogActions={blogActions}/>
+        <Blog.Blog key={blog.id} blog={blog} blogActions={blogActions} />
       )}
       <br />
       {user.username} Logged in <button onClick={logOut}>Log Out</button>
