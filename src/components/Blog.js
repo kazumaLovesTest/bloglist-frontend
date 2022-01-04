@@ -1,5 +1,5 @@
 import React, { useState, } from 'react'
-const Blog = (({ blog, blogActions}) => {
+const Blog = (({ blog, blogActions }) => {
   const [view, setView] = useState(false)
   const blogStyle = {
     paddingTop: 10,
@@ -13,8 +13,8 @@ const Blog = (({ blog, blogActions}) => {
     return (
       <ul style={blogStyle}>
         <li>Title:{blog.title}
-        <button onClick={() => setView(!view)}>view</button>
-        <button onClick={() => blogActions.deleteBlog(blog)}>delete</button>
+          <button onClick={() => setView(!view)}>view</button>
+          <button onClick={() => blogActions.deleteBlog(blog)}>delete</button>
         </li>
       </ul>
     )
@@ -22,10 +22,10 @@ const Blog = (({ blog, blogActions}) => {
     return (
       <ul style={blogStyle}>
         <li>Title:{blog.title}
-         <button onClick={() => setView(!view)}>view</button>
-        <button onClick={() => blogActions.deleteBlog(Blog)}>delete</button></li>
+          <button onClick={() => setView(!view)}>view</button>
+          <button onClick={() => blogActions.deleteBlog(Blog)}>delete</button></li>
         <li>Link:{blog.url}</li>
-        <li>Likes:{blog.likes}<button onClick={() =>blogActions.addLike(blog)}>Like</button></li>
+        <li>Likes:{blog.likes}<button onClick={() => blogActions.addLike(blog)}>Like</button></li>
         <li>Author:{blog.author}</li>
         <li>Id:{blog.id}</li>
       </ul>

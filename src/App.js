@@ -40,7 +40,7 @@ const App = () => {
       resetInputSet()
     }
     catch (exception) {
-      setNotification({ ...notification, errorMessage: "wrong username or password" })
+      setNotification({ ...notification, errorMessage: 'wrong username or password' })
       setTimeout(() => {
         setNotification({ ...notification, errorMessage: null })
       }, 3000)
@@ -88,7 +88,7 @@ const App = () => {
     }
   }
   const deleteBlog = async (toBeDeleted) => {
-    if (window.confirm("Are you sure you want to delete this blog?") === false)
+    if (window.confirm('Are you sure you want to delete this blog?') === false)
       return
     try {
       await blogService.deleteBlog(toBeDeleted)

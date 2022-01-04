@@ -1,4 +1,5 @@
-const LoginForm = ({login,setUsername,setPassword}) => {
+import React from 'react'
+const LoginForm = ({ login, setUsername, setPassword }) => {
   return (
     <>
       <form onSubmit={login.handleLogin}>
