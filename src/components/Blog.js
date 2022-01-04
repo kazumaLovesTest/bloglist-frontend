@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
-const Blog = ({ blog }) => {
+import React, { useState,useImperativeHandle } from 'react'
+const Blog = React.forwardRef(({ blog, addLike},ref) => {
   const [view, setView] = useState(false)
+  const [likes, setLike] = useState(blog.likes)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -9,6 +10,15 @@ const Blog = ({ blog }) => {
     marginBottom: 5,
     listStyle: 'none'
   }
+  const handleSetLikes = () => {
+    const increasedLikes = likes + 1
+    setLike(increasedLikes)
+  }
+ useImperativeHandle (ref, () => {
+   return {
+    handleSetLikes
+   }
+ })
   if (view === false)
     return (
       <ul style={blogStyle}>
@@ -20,11 +30,12 @@ const Blog = ({ blog }) => {
       <ul style={blogStyle}>
         <li>Title:{blog.title} <button onClick={() => setView(!view)}>view</button></li>
         <li>Link:{blog.url}</li>
-        <li>Likes:{blog.likes}</li>
+        <li>Likes:{blog.likes}<button onClick={() =>addLike(blog)}>Like</button></li>
         <li>Author:{blog.author}</li>
+        <li>Id:{blog.id}</li>
       </ul>
     )
-}
+})
 
 const BlogForm = ({ handleAdding }) => {
   const [title, setTitle] = useState('')

@@ -13,8 +13,6 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState({ errorMessage: null, succuses: null })
 
-
-
   const resetInputSet = () => {
     setUsername('')
     setPassword('')
@@ -67,6 +65,23 @@ const App = () => {
       }, 3000)
     }
   }
+  const blogRef = useRef()
+  const addLike = async (blog) => {
+    blog = { ...blog, userId: user._id }
+    blog.likes = blog.likes + 1 
+    delete blog.user
+    try{
+      const recievedBlog = await blogService.updateBlog(blog)
+      const updatedBlogs = blogs.map(blog => blog.id === recievedBlog.id?recievedBlog:blog)
+      setBlogs(updatedBlogs)
+    }
+    catch(exception) {
+      setNotification({ ...notification, errorMessage: `couldnt add like because ${exception}` })
+      setTimeout(() => {
+        setNotification({ ...notification, errorMessage: null })
+      }, 3000)
+    }
+  }
   const logOut = () => {
     window.localStorage.removeItem('loggedBloglistAppUser')
     setUser(null)
@@ -110,7 +125,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog.Blog key={blog.id} blog={blog} />
+        <Blog.Blog key={blog.id} blog={blog} addLike = {addLike} ref={blogRef}/>
       )}
       <br />
       {user.username} Logged in <button onClick={logOut}>Log Out</button>
