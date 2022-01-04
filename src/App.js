@@ -68,14 +68,21 @@ const App = () => {
   const blogRef = useRef()
   const addLike = async (blog) => {
     blog = { ...blog, userId: user._id }
-    blog.likes = blog.likes + 1 
+    blog.likes = blog.likes + 1
     delete blog.user
-    try{
+    try {
       const recievedBlog = await blogService.updateBlog(blog)
-      const updatedBlogs = blogs.map(blog => blog.id === recievedBlog.id?recievedBlog:blog)
+      const updatedBlogs = blogs.map(blog => blog.id === recievedBlog.id ? recievedBlog : blog)
+      const sortedBlogs = updatedBlogs.sort((a, b) => {
+        if (a.likes < b.likes)
+          return 1
+        else if(a.likes > b.likes)
+          return -1
+        return 0
+      })
       setBlogs(updatedBlogs)
     }
-    catch(exception) {
+    catch (exception) {
       setNotification({ ...notification, errorMessage: `couldnt add like because ${exception}` })
       setTimeout(() => {
         setNotification({ ...notification, errorMessage: null })
@@ -94,9 +101,16 @@ const App = () => {
   }
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    blogService.getAll().then((blogs) => {
+      const sortedBlogs = blogs.sort((a, b) => {
+        if (a.likes < b.likes)
+          return 1
+        if (a.likes > b.likes)
+          return -1
+        return 0
+      })
+      setBlogs(sortedBlogs)
+    })
   }, [])
 
   useEffect(() => {
@@ -125,7 +139,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog.Blog key={blog.id} blog={blog} addLike = {addLike} ref={blogRef}/>
+        <Blog.Blog key={blog.id} blog={blog} addLike={addLike} ref={blogRef} />
       )}
       <br />
       {user.username} Logged in <button onClick={logOut}>Log Out</button>
