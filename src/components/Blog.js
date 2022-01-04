@@ -1,7 +1,6 @@
-import React, { useState,useImperativeHandle } from 'react'
-const Blog = React.forwardRef(({ blog, addLike},ref) => {
+import React, { useState, } from 'react'
+const Blog = (({ blog, blogActions}) => {
   const [view, setView] = useState(false)
-  const [likes, setLike] = useState(blog.likes)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,27 +9,23 @@ const Blog = React.forwardRef(({ blog, addLike},ref) => {
     marginBottom: 5,
     listStyle: 'none'
   }
-  const handleSetLikes = () => {
-    const increasedLikes = likes + 1
-    setLike(increasedLikes)
-  }
- useImperativeHandle (ref, () => {
-   return {
-    handleSetLikes
-   }
- })
   if (view === false)
     return (
       <ul style={blogStyle}>
-        <li>Title:{blog.title}<button onClick={() => setView(!view)}>view</button></li>.
+        <li>Title:{blog.title}
+        <button onClick={() => setView(!view)}>view</button>
+        <button onClick={() => blogActions.deleteBlog(blog)}>delete</button>
+        </li>
       </ul>
     )
   if (view === true)
     return (
       <ul style={blogStyle}>
-        <li>Title:{blog.title} <button onClick={() => setView(!view)}>view</button></li>
+        <li>Title:{blog.title}
+         <button onClick={() => setView(!view)}>view</button>
+        <button onClick={() => blogActions.deleteBlog(Blog)}>delete</button></li>
         <li>Link:{blog.url}</li>
-        <li>Likes:{blog.likes}<button onClick={() =>addLike(blog)}>Like</button></li>
+        <li>Likes:{blog.likes}<button onClick={() =>blogActions.addLike(blog)}>Like</button></li>
         <li>Author:{blog.author}</li>
         <li>Id:{blog.id}</li>
       </ul>

@@ -16,7 +16,6 @@ const App = () => {
   const resetInputSet = () => {
     setUsername('')
     setPassword('')
-
   }
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -65,7 +64,6 @@ const App = () => {
       }, 3000)
     }
   }
-  const blogRef = useRef()
   const addLike = async (blog) => {
     blog = { ...blog, userId: user._id }
     blog.likes = blog.likes + 1
@@ -80,10 +78,27 @@ const App = () => {
           return -1
         return 0
       })
-      setBlogs(updatedBlogs)
+      setBlogs(sortedBlogs)
     }
     catch (exception) {
       setNotification({ ...notification, errorMessage: `couldnt add like because ${exception}` })
+      setTimeout(() => {
+        setNotification({ ...notification, errorMessage: null })
+      }, 3000)
+    }
+  }
+  const deleteBlog = async(toBeDeleted) => {
+    try {
+      await blogService.deleteBlog(toBeDeleted)
+      const filteredBlogs = blogs.filter(blog => blog.id === toBeDeleted.id ? false:true)
+      setBlogs(filteredBlogs)
+      setNotification({ ...notification, succuses: `${toBeDeleted.title} was deleted` })
+      setTimeout(() => {
+        setNotification({ ...notification, succuses: null })
+      }, 3000)
+    }
+    catch(exception){
+      setNotification({ ...notification, errorMessage: `couldnt delete blog because ${exception}` })
       setTimeout(() => {
         setNotification({ ...notification, errorMessage: null })
       }, 3000)
@@ -127,19 +142,22 @@ const App = () => {
       <Blog.BlogForm handleAdding={handleAdding} />
     </Togglable>
   )
+  const blogActions = {
+    addLike:addLike,
+    deleteBlog:deleteBlog
+  }
   if (user === null)
     return (
       <>
         <LoginForm login={loginInfo} setUsername={setUsername} setPassword={setPassword} />
         <Notification notification={notification} />
       </>
-
     )
   return (
     <div>
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog.Blog key={blog.id} blog={blog} addLike={addLike} ref={blogRef} />
+        <Blog.Blog key={blog.id} blog={blog} blogActions={blogActions}/>
       )}
       <br />
       {user.username} Logged in <button onClick={logOut}>Log Out</button>
