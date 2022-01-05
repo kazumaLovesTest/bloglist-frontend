@@ -11,22 +11,23 @@ const Blog = (({ blog, blogActions }) => {
   }
   if (view === false)
     return (
-      <ul style={blogStyle}>
+      <ul style={blogStyle} className='Blog_When_hidden'>
         <li>Title:{blog.title}
-          <button onClick={() => setView(!view)}>view</button>
+          <button onClick={() => setView(!view)}>View</button>
           <button onClick={() => blogActions.deleteBlog(blog)}>delete</button>
         </li>
+        <li>Author:{blog.author}</li>
       </ul>
     )
   if (view === true)
     return (
-      <ul style={blogStyle}>
+      <ul style={blogStyle} className='Blog_When_Viewed'>
         <li>Title:{blog.title}
-          <button onClick={() => setView(!view)}>view</button>
+          <button onClick={() => setView(!view)}>Hide</button>
           <button onClick={() => blogActions.deleteBlog(Blog)}>delete</button></li>
+        <li>Author:{blog.author}</li>
         <li>Link:{blog.url}</li>
         <li>Likes:{blog.likes}<button onClick={() => blogActions.addLike(blog)}>Like</button></li>
-        <li>Author:{blog.author}</li>
         <li>Id:{blog.id}</li>
       </ul>
     )
@@ -59,11 +60,11 @@ const BlogForm = ({ handleAdding }) => {
   return (
     <>
       <form onSubmit={addBlog}>
-        Author:<input type='text' name='author' value={author} onChange={({ target }) => setAuthor(target.value)} />
+        Author:<input id = 'author' type='text' name='author' value={author} onChange={({ target }) => setAuthor(target.value)} />
         <br />
-        Title:<input type='text' name='title' value={title} onChange={({ target }) => setTitle(target.value)} />
+        Title:<input id = 'title' type='text' name='title' value={title} onChange={({ target }) => setTitle(target.value)} />
         <br />
-        URL:<input type='url' name='url' value={url} onChange={({ target }) => setUrl(target.value)} />
+        URL:<input id = 'url' type='url' name='url' value={url} onChange={({ target }) => setUrl(target.value)} />
         <br />
         <button type='submit'>Add blog</button>
       </form>
