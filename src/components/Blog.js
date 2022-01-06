@@ -66,7 +66,7 @@ const BlogForm = ({ handleAdding }) => {
         <br />
         URL:<input id = 'url' type='url' name='url' value={url} onChange={({ target }) => setUrl(target.value)} />
         <br />
-        <button type='submit'>Add blog</button>
+        <button id = 'submit' type='submit'>Add blog</button>
       </form>
     </>
   )

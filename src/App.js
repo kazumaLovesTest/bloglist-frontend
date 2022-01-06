@@ -47,11 +47,9 @@ const App = () => {
     }
   }
   const handleAdding = async (blog) => {
-    blog = { ...blog, userId: user._id }
     try {
       const recievedBlog = await blogService.addBlog(blog)
       setBlogs(blogs.concat(recievedBlog))
-      blogFormref.current.toggleVisibility()
       setNotification({ ...notification, succuses: `${recievedBlog.title} was added` })
       setTimeout(() => {
         setNotification({ ...notification, succuses: null })
@@ -65,11 +63,9 @@ const App = () => {
     }
   }
   const addLike = async (blog) => {
-    blog = { ...blog, userId: user._id }
-    blog.likes = blog.likes + 1
-    delete blog.user
+    const blogCopy = { ...blog, likes: blog.likes + 1, user: user._id }
     try {
-      const recievedBlog = await blogService.updateBlog(blog)
+      const recievedBlog = await blogService.updateBlog(blogCopy)
       const updatedBlogs = blogs.map(blog => blog.id === recievedBlog.id ? recievedBlog : blog)
       const sortedBlogs = updatedBlogs.sort((a, b) => {
         if (a.likes < b.likes)
