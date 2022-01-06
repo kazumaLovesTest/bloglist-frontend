@@ -19,7 +19,7 @@ const Notification = ({ notification }) => {
   }
 
   return (
-    <p style={notificationStyle}>{message}</p>
+    <p style={notificationStyle} className='notification'>{message}</p>
   )
 }
 
